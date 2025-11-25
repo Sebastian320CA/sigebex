@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+<body class="min-h-screen flex flex-col bg-white text-slate-900">
+<header th:replace="~{layout/layout :: header}"></header>
+
+<main class="flex-1 pt-24 px-6 pb-32">
+    <section class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-sky-700 mb-4">[[${title}]]</h1>
+        <div class="mb-6 p-3 rounded bg-sky-50 border border-sky-200"
+             th:if="${record.team != null}">
+            <p class="text-sm text-slate-700">
+                Selected Equipment:
+                <span class="font-semibold">
+                    [[${record.team.brand}]] - [[${record.team.model}]]
+                    (Serial: [[${record.team.serial}]])
+                </span>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <form th:action="${record.id} == null ?
+                @{/movementRecord} :
+                @{/movementRecord/edit/{id}(id=${record.id})}"
+                  th:object="${record}" method="post"
+                  enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div>
+                    <label class="block text-sm font-medium text-slate-700">Equipment *</label>
+                    <select th:field="*{team}" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2
+                        focus:ring-sky-600 focus:border-sky-600">
+                        <option value="">Select Equipment</option>
+                        <option th:each="equipment : ${equipmentList}"
+                                th:value="${equipment.id}"
+                                th:text="${equipment.brand + ' - ' + equipment.model + ' (' + equipment.serial + ')'}">
+                        </option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('team')}" th:errors="*{team}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Registered By *</label>
+                    <select th:field="*{registeredBy}" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2
+                        focus:ring-sky-600 focus:border-sky-600">
+                        <option value="">Select User</option>
+                        <option th:each="user : ${users}"
+                                th:value="${user.id}"
+                                th:text="${user.userName + ' ' + user.userLastName}">
+                        </option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('registeredBy')}" th:errors="*{registeredBy}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Destination Area *</label>
+                    <input th:field="*{destinationArea}" type="text" maxlength="60" required
+                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-sky-600 focus:border-sky-600"
+                           placeholder="e.g., Radiology, ICU">
+                    <p th:if="${#fields.hasErrors('destinationArea')}" th:errors="*{destinationArea}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Reason *</label>
+                    <input th:field="*{reason}" type="text" maxlength="60" required
+                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-sky-600 focus:border-sky-600"
+                           placeholder="e.g., Maintenance, Repair">
+                    <p th:if="${#fields.hasErrors('reason')}" th:errors="*{reason}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">State *</label>
+                    <select th:field="*{state}" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2
+                        focus:ring-sky-600 focus:border-sky-600">
+                        <option value="">Select State</option>
+                        <option value="Inside">Inside</option>
+                        <option value="Outside">Outside</option>
+                        <option value="In preview">Under Review</option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('state')}" th:errors="*{state}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Entry Date *</label>
+                    <input th:field="*{entryDate}" type="date" required
+                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-sky-600 focus:border-sky-600">
+                    <p th:if="${#fields.hasErrors('entryDate')}" th:errors="*{entryDate}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Exit Date</label>
+                    <input th:field="*{exitDate}" type="date"
+                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-sky-600 focus:border-sky-600">
+                    <p th:if="${#fields.hasErrors('exitDate')}" th:errors="*{exitDate}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700">Observation *</label>
+                    <textarea th:field="*{observation}" rows="3" maxlength="100" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-sky-600 focus:border-sky-600"
+                              placeholder="Additional details about this movement..."></textarea>
+                    <p th:if="${#fields.hasErrors('observation')}" th:errors="*{observation}" class="text-red-600 text-sm mt-1"></p>
+                </div>
+                <label class="text-stone-900 font-bold">Equipment Photo: </label>
+                <input type="file" id="foto" name="photoFile" accept="image/*" class="border-0">
+                <p id="error" class="text-red-500 text-sm mt-2"></p>
+
+                <div class="flex justify-center mt-4 md:col-span-2">
+                    <img id="preview"
+                         src="#"
+                         alt="Equipment photo preview"
+                         class="w-48 h-48 object-cover rounded-xl border-4 border-stone-300 shadow-xl bg-white/70 hidden">
+                </div>
+                <div class="md:col-span-2 flex justify-between mt-6">
+                    <button type="submit" class="bg-sky-700 hover:bg-sky-900 text-white font-semibold px-6 py-2 rounded-lg">
+                        Register Movement
+                    </button>
+                    <a th:href="@{/movementRecord}" class="bg-gray-500 hover:bg-gray-700 text-white font-semibold px-6 py-2 rounded-lg">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+            <div class="hidden md:flex justify-center">
+                <img th:src="@{/images/hospital.png}" alt="Hospital Equipment" class="rounded-lg shadow-md mx-h-96 object-cover">
+
+            </div>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{layout/layout :: footer}"></footer>
+</body>
+<script>
+    const inputFoto = document.getElementById("foto")
+    const preview = document.getElementById("preview")
+    const errorMessage = document.getElementById("error")
+    const maxSizeInMB = 2;
+
+    inputFoto.addEventListener("change", function (){
+        const file = this.files[0];
+        if (file && file.type.startsWith("image/")){
+            if (file.size > maxSizeInMB * 1024 * 1024){
+                errorMessage.textContent = `The file must be less than or equal to ${maxSizeInMB} MB`;
+                preview.style.display = 'none';
+                inputFoto.value = '';
+                inputFoto.disabled = false;
+            }else{
+                errorMessage.textContent = '';
+                const reader = new FileReader();
+                reader.onload = function (e){
+                    preview.src = e.target.result;
+                    preview.classList.remove("hidden");
+                };
+                reader.readAsDataURL(file);
+            }
+        }else{
+            preview.src = "#";
+            preview.classList.add("hidden");
+        }
+    });
+</script>
+</html>

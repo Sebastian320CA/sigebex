@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+<body class="min-h-screen flex flex-col bg-white">
+<header th:replace="~{layout/layout :: header}"></header>
+
+<main class="flex-1 pt-24 px-6 pb-32">
+    <section class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900">[[${title}]]</h1>
+                <p class="text-slate-600">Browse all movement records and filter results as needed.</p>
+            </div>
+            <div>
+                <a th:href="@{/movementRecord/new}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-700
+                    text-white font-semibold hover:bg-sky-900 transition-colors">
+                    <i class="fa-solid fa-square-plus mr-1"></i>
+                    Add New Movement
+                </a>
+            </div>
+        </div>
+        <form th:action="@{/movementRecord}" method="get" class="grid gap-4 md:grid-cols-4 mb-6">
+            <div>
+                <label for="userId" class="block text-sm font-medium text-slate-700">User</label>
+                <select id="userId" name="userId" class="mt-1 w-full rounded-xl border border-slate-300 py-2
+                    focus:border-sky-600 focus:ring-sky-600">
+                    <option value="">All Users</option>
+                    <option th:each="user : ${users}"
+                            th:value="${user.id}"
+                            th:text="${user.userName + ' ' + user.userLastName}"
+                            th:selected="${userId == user.id}">
+                    </option>
+                </select>
+            </div>
+            <div>
+                <label for="equipmentId" class="block text-sm font-medium text-slate-700">Equipment</label>
+                <select id="equipmentId" name="equipmentId" class="mt-1 w-full rounded-xl border border-slate-300 py-2
+                    focus:border-sky-600 focus:ring-sky-600">
+                    <option value="">All Equipment</option>
+                    <option th:each="equipment : ${equipmentList}"
+                            th:value="${equipment.id}"
+                            th:text="${equipment.brand + ' - ' + equipment.serial}"
+                            th:selected="${equipmentId == equipment.id}">
+                    </option>
+                </select>
+            </div>
+            <div class="flex items-end gap-2">
+                <button type="submit" class="w-full md:w-auto px-4 py-2 rounded-xl border border-2 border-sky-700 text-sky-700
+                    font-semibold hover:bg-sky-200 transition-colors">
+                    Filter
+                </button>
+                <a th:href="@{/movementRecord}" class="w-full md:w-auto px-4 py-2 rounded-xl border border-2 border-sky-700 text-sky-700
+                    font-semibold hover:bg-sky-200 transition-colors">
+                    Clear
+                </a>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="w-full min-w-[1400px] text-sm divide-y divide-slate-300">
+                <thead class="bg-sky-100">
+                <tr class="text-left text-slate-700">
+                    <th class="px-4 py-3 font-semibold">ID</th>
+                    <th class="px-4 py-3 font-semibold">Equipment</th>
+                    <th class="px-4 py-3 font-semibold">Destination Area</th>
+                    <th class="px-4 py-3 font-semibold">Reason</th>
+                    <th class="px-4 py-3 font-semibold">State</th>
+                    <th class="px-4 py-3 font-semibold">Entry Date</th>
+                    <th class="px-4 py-3 font-semibold">Exit Date</th>
+                    <th class="px-4 py-3 font-semibold">Registered By</th>
+                    <th class="px-4 py-3 font-semibold">Observation</th>
+                    <th class="px-4 py-3 font-semibold">Photo</th>
+                    <th class="px-4 py-3 font-semibold text-right">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-200">
+                <tr th:each="record : ${records}" class="hover:bg-slate-100">
+                    <td class="px-4 py-3" th:text="${record.id}"></td>
+                    <td class="px-4 py-3" th:text="${record.team.brand + ' - ' + record.team.serial}"></td>
+                    <td class="px-4 py-3" th:text="${record.destinationArea}"></td>
+                    <td class="px-4 py-3" th:text="${record.reason}"></td>
+                    <td class="px-4 py-3">
+                        <span th:if="${record.state == 'Dentro'}" class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Inside
+                        </span>
+                        <span th:if="${record.state == 'Fuera'}" class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Outside
+                        </span>
+                        <span th:if="${record.state != 'Dentro' && record.state != 'Fuera'}" class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            [[${record.state}]]
+                        </span>
+                    </td>
+                    <td class="px-4 py-3" th:text="${#temporals.format(record.entryDate, 'yyyy-MM-dd')}"></td>
+                    <td class="px-4 py-3" th:text="${record.exitDate != null ? #temporals.format(record.exitDate, 'yyyy-MM-dd') : 'N/A'}"></td>
+                    <td class="px-4 py-3" th:text="${record.registeredBy.userName + ' ' + record.registeredBy.userLastName}"></td>
+                    <td class="px-4 py-3 max-w-xs truncate" th:text="${record.observation}"></td>
+                    <td class="px-4 py-3">
+                        <a th:if="${record.photo}" th:href="${record.photo}" target="_blank"
+                           class="text-sky-600 hover:text-sky-800 underline">
+                            View Photo
+                        </a>
+                        <span th:unless="${record.photo}" class="text-slate-400">No photo</span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center justify-end gap-2">
+                            <a th:if="${record.state == 'Dentro'}"
+                               th:href="@{/movementRecord/exit/{id} (id=${record.id})}"
+                               class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-500 text-white hover:bg-orange-700 transition-colors">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                Register Exit
+                            </a>
+                            <a th:href="@{/movementRecord/edit/{id} (id=${record.id})}"
+                               class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-sky-700 text-white hover:bg-sky-900 transition-colors">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                Edit
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(records)}">
+                    <td colspan="11" class="px-4 py-6 text-center text-slate-500">
+                        No movement records found. Try different filters or
+                        <a th:href="@{/movementRecord/new}" class="text-sky-600 hover:text-sky-800 underline">create a new one</a>.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{layout/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="m-0 p-0 font-sans bg-[url('/images/log.jpg')] bg-cover bg-center bg-fixed">
+<header th:replace="~{layout/layout :: header}"></header>
+
+<div class="max-w-md mx-auto mt-24 mb-12 bg-white/95 rounded-2xl p-8 shadow-xl backdrop-blur-sm border border-white/20">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-8">
+        <img th:src="@{/images/Logo.png}" alt="Synexis"
+             class="mx-auto h-16 w-16 rounded-xl mb-4 shadow-md">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
+        <p class="text-gray-600 text-sm">Sign in to your SYNEXIS account</p>
+    </div>
+
+    <!-- FORMULARIO -->
+    <form th:action="@{/process_login}" method="post" class="flex flex-col gap-6" id="loginForm">
+
+        <!-- Email -->
+        <div class="flex flex-col group">
+            <label for="username" class="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-envelope text-amber-600"></i>
+                Email Address
+            </label>
+            <input type="email"
+                   id="username"
+                   name="username"
+                   placeholder="Enter your email"
+                   required
+                   autocomplete="email"
+                   class="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all duration-300 shadow-sm" />
+        </div>
+
+        <!-- Password -->
+        <div class="flex flex-col relative group">
+            <label for="password" class="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-lock text-amber-600"></i>
+                Password
+            </label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   placeholder="Enter your password"
+                   required
+                   autocomplete="current-password"
+                   class="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all duration-300 shadow-sm pr-12" />
+            <button type="button"
+                    onclick="togglePassword('password', this)"
+                    class="absolute right-3 top-11 text-gray-500 hover:text-amber-600 transition-colors duration-200">
+                <i class="fa-solid fa-eye"></i>
+            </button>
+        </div>
+
+        <!-- Botón -->
+        <button type="submit"
+                id="loginBtn"
+                class="bg-gradient-to-r from-amber-600 to-amber-700 text-white py-3.5 px-4 rounded-lg font-bold hover:from-amber-500 hover:to-amber-600 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 group">
+            <i class="fa-solid fa-arrow-right-to-bracket transition-transform"></i>
+            <span id="btnText">SIGN IN</span>
+            <div id="spinner" class="hidden">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+        </button>
+
+    </form>
+
+    <!-- Mensaje institucional -->
+    <p class="mt-6 text-center text-gray-600 text-sm">
+        If you need access to the system, please contact your administrator.
+    </p>
+
+</div>
+
+<footer th:replace="~{layout/layout :: footer}"></footer>
+
+<script>
+    // Mostrar/ocultar contraseña
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        const isPwd = input.type === 'password';
+
+        input.type = isPwd ? 'text' : 'password';
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    }
+
+    // Estado de carga al enviar login
+    document.getElementById('loginForm').addEventListener('submit', function() {
+        const btn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+
+        btn.disabled = true;
+        btnText.textContent = 'Signing in...';
+        spinner.classList.remove('hidden');
+    });
+
+    // Swal para errores y logout
+    document.addEventListener("DOMContentLoaded", function () {
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.has('error')) {
+            Swal.fire({
+                icon: "error",
+                title: "Login Failed",
+                text: "Invalid email or password.",
+                background: '#fef2f2',
+                iconColor: '#ef4444'
+            });
+        }
+
+        if (params.has('logout')) {
+            Swal.fire({
+                icon: "success",
+                title: "Logged Out",
+                text: "You have been successfully logged out.",
+                timer: 2500,
+                showConfirmButton: false,
+                background: '#f0fdf4',
+                iconColor: '#10b981'
+            });
+        }
+    });
+</script>
+
+<style>
+    * {
+        transition: all 0.2s ease;
+    }
+    input:focus {
+        transform: translateY(-1px);
+    }
+</style>
+
+</body>
+</html>

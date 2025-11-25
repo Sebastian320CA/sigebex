@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+
+<body class="min-h-screen flex flex-col bg-white text-slate-800">
+<header th:replace="~{layout/layout :: header}"></header>
+
+<main class="flex-1 pt-24">
+    <section class="max-w-3xl mx-auto px-6 md:px-8 py-10">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-sky-800 text-center">Contact Us</h1>
+        <p class="text-slate-600 text-center mt-2">
+            Have questions about <strong>SYNEXIS</strong> or need technical support?
+            Send us a message and our team will respond as soon as possible.
+        </p>
+
+        <form th:action="@{/contact}" method="post"
+              class="mt-6 grid gap-4 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Subject *</label>
+                <input name="subject" type="text" maxlength="80" required
+                       class="mt-1 w-full rounded-lg border border-slate-300 focus:border-sky-700 focus:ring-sky-700 px-3"
+                       placeholder="Enter the subject of your message">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Type *</label>
+                <select name="type" required
+                        class="mt-1 w-full rounded-lg border-slate-300 focus:border-sky-700 focus:ring-sky-700">
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="Technical Support">Technical Support</option>
+                    <option value="Information Request">Information Request</option>
+                    <option value="Feedback">Feedback</option>
+                    <option value="Complaint">Complaint</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">
+                    Message <span class="text-xs text-slate-500">(max 500 characters)</span>
+                </label>
+                <textarea name="message" rows="6" maxlength="500" required
+                          class="mt-1 w-full rounded-lg border-slate-300 focus:border-sky-700 focus:ring-sky-700 px-3"
+                          placeholder="Write your message here..."></textarea>
+                <div class="text-right text-xs text-slate-500 mt-1">
+                    <span id="charCount">0</span>/500
+                </div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Full Name *</label>
+                    <input name="name" type="text" maxlength="60" required
+                           class="px-3 mt-1 w-full rounded-lg border-slate-300 focus:border-sky-700 focus:ring-sky-700"
+                           placeholder="Your full name">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Phone *</label>
+                    <input name="phone" type="text" maxlength="20" required
+                           class="px-3 mt-1 w-full rounded-lg border-slate-300 focus:border-sky-700 focus:ring-sky-700"
+                           placeholder="+57 320 284 2041">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Email *</label>
+                    <input name="email" type="email" maxlength="120" required
+                           class="px-3 mt-1 w-full rounded-lg border-slate-300 focus:border-sky-700 focus:ring-sky-700"
+                           placeholder="you@example.com">
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 pt-4">
+                <button type="submit"
+                        class="px-5 py-2 rounded-xl bg-sky-700 text-white font-semibold hover:bg-sky-900 transition-colors shadow">
+                    Send Message
+                </button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer th:replace="~{layout/layout :: footer}"></footer>
+
+<script>
+    const ta = document.querySelector('textarea[name="message"]');
+    const cc = document.getElementById('charCount');
+    if (ta && cc) {
+        const update = () => cc.textContent = ta.value.length;
+        ta.addEventListener('input', update);
+        update();
+    }
+</script>
+</body>
+</html>
