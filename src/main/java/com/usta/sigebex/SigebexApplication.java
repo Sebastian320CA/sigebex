@@ -29,7 +29,7 @@ public class SigebexApplication {
     }
 
     private void crearRolesSiNoExisten(RolDao rolRepository) {
-        if (rolRepository.findByName("ROLE_ADMIN") == null) {
+        if (rolRepository.findByNameRol("ROLE_ADMIN") == null) {
             RolEntity roleAdmin = new RolEntity();
             roleAdmin.setNameRol("ROLE_ADMIN");
             rolRepository.save(roleAdmin);
@@ -39,7 +39,7 @@ public class SigebexApplication {
         }
 
 
-        if (rolRepository.findByName("ROLE_BIOMEDICO") == null) {
+        if (rolRepository.findByNameRol("ROLE_BIOMEDICO") == null) {
             RolEntity roleBiomedico = new RolEntity();
             roleBiomedico.setNameRol("ROLE_BIOMEDICO");
             rolRepository.save(roleBiomedico);
@@ -49,7 +49,7 @@ public class SigebexApplication {
         }
 
 
-        if (rolRepository.findByName("ROLE_SEGURIDAD") == null) {
+        if (rolRepository.findByNameRol("ROLE_SEGURIDAD") == null) {
             RolEntity roleSeguridad = new RolEntity();
             roleSeguridad.setNameRol("ROLE_SEGURIDAD");
             rolRepository.save(roleSeguridad);
@@ -68,7 +68,7 @@ public class SigebexApplication {
             admin.setEmail("admin@sigebex.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setUserState(true);
-            RolEntity adminRole = rolRepository.findByName("ROLE_ADMIN");
+            RolEntity adminRole = rolRepository.findByNameRol("ROLE_ADMIN");
             if (adminRole != null) {
                 admin.setRol(adminRole);
             }
