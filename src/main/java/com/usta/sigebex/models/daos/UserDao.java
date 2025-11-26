@@ -26,12 +26,11 @@ public interface UserDao extends JpaRepository<UserEntity, Long> {
 
 
     @Transactional(readOnly = true)
-    @Query(value = """
-    SELECT * FROM users u 
-    WHERE (:name IS NULL OR LOWER(u.user_name) LIKE LOWER('%' || CAST(:name AS text) || '%'))
-      AND (:lastName IS NULL OR LOWER(u.user_last_name) LIKE LOWER('%' || CAST(:lastName AS text) || '%'))
-    ORDER BY u.user_last_name ASC, u.user_name ASC
-""", nativeQuery = true)
+    @Query(value = "SELECT * FROM users u " +
+            "WHERE (:name IS NULL OR LOWER(u.user_name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+            "AND (:lastName IS NULL OR LOWER(u.user_last_name) LIKE LOWER(CONCAT('%', :lastName, '%'))) " +
+            "ORDER BY u.user_last_name ASC, u.user_name ASC",
+            nativeQuery = true)
     List<UserEntity> search(
             @Param("name") String name,
             @Param("lastName") String lastName
